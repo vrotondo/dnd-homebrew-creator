@@ -3,16 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import {
-    addCharacter,
-    updateCharacter,
     addCustomClass,
-    updateCustomClass,
-    addCustomRace,
-    updateCustomRace,
-    addCustomBackground,
-    updateCustomBackground,
-    addCustomFeat,
-    updateCustomFeat
+    updateCustomClass
 } from '../../store/characterSlice';
 import SrdValidator from '../srd/SrdValidator';
 import {
@@ -20,61 +12,20 @@ import {
     XMarkIcon,
     ExclamationTriangleIcon,
     DocumentDuplicateIcon,
-    ArrowLeftIcon
+    ArrowLeftIcon,
+    PlusIcon,
+    TrashIcon
 } from '@heroicons/react/24/outline';
 
-const CharacterEditor = ({ type = 'character' }) => {
+const ClassEditor = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { id } = useParams();
     const isNew = !id;
 
-    // Get the appropriate data and actions based on the type
-    let items = [];
-    let title = '';
-    let listPath = '';
-    let addAction = null;
-    let updateAction = null;
-
-    switch (type) {
-        case 'class':
-            items = useSelector((state) => state.character.customClasses);
-            title = isNew ? 'Create New Class' : 'Edit Class';
-            listPath = '/classes';
-            addAction = addCustomClass;
-            updateAction = updateCustomClass;
-            break;
-        case 'race':
-            items = useSelector((state) => state.character.customRaces);
-            title = isNew ? 'Create New Race' : 'Edit Race';
-            listPath = '/races';
-            addAction = addCustomRace;
-            updateAction = updateCustomRace;
-            break;
-        case 'background':
-            items = useSelector((state) => state.character.customBackgrounds);
-            title = isNew ? 'Create New Background' : 'Edit Background';
-            listPath = '/backgrounds';
-            addAction = addCustomBackground;
-            updateAction = updateCustomBackground;
-            break;
-        case 'feat':
-            items = useSelector((state) => state.character.customFeats);
-            title = isNew ? 'Create New Feat' : 'Edit Feat';
-            listPath = '/feats';
-            addAction = addCustomFeat;
-            updateAction = updateCustomFeat;
-            break;
-        default:
-            items = useSelector((state) => state.character.characters);
-            title = isNew ? 'Create New Character' : 'Edit Character';
-            listPath = '/characters';
-            addAction = addCharacter;
-            updateAction = updateCharacter;
-    }
-
-    // Find the item if editing
-    const item = isNew ? null : items.find(item => item.id === id);
+    // Get the class data
+    const customClasses = useSelector((state) => state.character.customClasses);
+    const classItem = isNew ? null : customClasses.find(item => item.id === id);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -84,8 +35,15 @@ const CharacterEditor = ({ type = 'character' }) => {
         createdAt: '',
         updatedAt: '',
         isSrdCompliant: true,
-        // Additional fields will vary by type
-        // These are just base fields all types share
+        hitDie: 'd8',
+        primaryAbility: 'strength',
+        savingThrowProficiencies: [],
+        armorProficiencies: [],
+        weaponProficiencies: [],
+        toolProficiencies: [],
+        skillProficiencies: [],
+        features: [],
+        subclasses: []
     });
 
     const [srdIssues, setSrdIssues] = useState([]);
@@ -96,9 +54,9 @@ const CharacterEditor = ({ type = 'character' }) => {
 
     // If editing, populate form with existing data
     useEffect(() => {
-        if (item) {
+        if (classItem) {
             setFormData({
-                ...item,
+                ...classItem,
             });
         } else if (isNew) {
             setFormData({
@@ -108,110 +66,60 @@ const CharacterEditor = ({ type = 'character' }) => {
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
                 isSrdCompliant: true,
-                // Initialize type-specific fields
-                ...(type === 'character' && {
-                    level: 1,
-                    race: '',
-                    class: '',
-                    background: '',
-                    alignment: '',
-                    stats: {
-                        strength: 10,
-                        dexterity: 10,
-                        constitution: 10,
-                        intelligence: 10,
-                        wisdom: 10,
-                        charisma: 10
-                    },
-                    hitPoints: 0,
-                    armorClass: 10,
-                    speed: 30,
-                    proficiencies: [],
-                    equipment: [],
-                    features: [],
-                    spells: []
-                }),
-                ...(type === 'class' && {
-                    hitDie: 'd8',
-                    primaryAbility: 'strength',
-                    savingThrowProficiencies: [],
-                    armorProficiencies: [],
-                    weaponProficiencies: [],
-                    toolProficiencies: [],
-                    skillProficiencies: [],
-                    features: [],
-                    subclasses: []
-                }),
-                ...(type === 'race' && {
-                    size: 'medium',
-                    speed: 30,
-                    abilityScoreIncrease: [],
-                    traits: [],
-                    languages: [],
-                    subraces: []
-                }),
-                ...(type === 'background' && {
-                    skillProficiencies: [],
-                    toolProficiencies: [],
-                    languages: [],
-                    equipment: [],
-                    feature: {
-                        name: '',
-                        description: ''
-                    },
-                    personalityTraits: [],
-                    ideals: [],
-                    bonds: [],
-                    flaws: []
-                }),
-                ...(type === 'feat' && {
-                    prerequisites: [],
-                    effects: []
-                })
+                hitDie: 'd8',
+                primaryAbility: 'strength',
+                savingThrowProficiencies: [],
+                armorProficiencies: [],
+                weaponProficiencies: [],
+                toolProficiencies: [],
+                skillProficiencies: [],
+                features: [],
+                subclasses: []
             });
         }
-    }, [item, isNew, type]);
+    }, [classItem, isNew]);
 
     // Check if data has been modified
     useEffect(() => {
-        if (item) {
-            const isChanged = JSON.stringify(item) !== JSON.stringify(formData);
+        if (classItem) {
+            const isChanged = JSON.stringify(classItem) !== JSON.stringify(formData);
             setHasUnsavedChanges(isChanged);
         } else if (isNew) {
             const isPopulated = formData.name.trim() !== '' || formData.description.trim() !== '';
             setHasUnsavedChanges(isPopulated);
         }
-    }, [formData, item, isNew]);
+    }, [formData, classItem, isNew]);
 
-    // Validate SRD compliance (placeholder for actual validation)
+    // Validate SRD compliance
     useEffect(() => {
         // This would be replaced with actual SRD validation logic
         const issues = [];
 
-        // Example validation specific to each type
-        if (type === 'class') {
-            // Check for non-SRD features
-            if (formData.features && formData.features.some(feature => !feature.isSrdCompliant)) {
-                issues.push({
-                    severity: 'error',
-                    message: 'Some class features reference non-SRD content'
-                });
-            }
-        } else if (type === 'race') {
-            // Check for non-SRD traits
-            if (formData.traits && formData.traits.some(trait => !trait.isSrdCompliant)) {
-                issues.push({
-                    severity: 'error',
-                    message: 'Some racial traits reference non-SRD content'
-                });
-            }
+        // Example validation
+        if (formData.name && formData.name.includes('Artificer')) {
+            issues.push({
+                severity: 'error',
+                message: 'The Artificer class is not part of the SRD content'
+            });
+        }
+
+        // Check for non-SRD features
+        if (formData.features && formData.features.some(feature => !feature.isSrdCompliant)) {
+            issues.push({
+                severity: 'error',
+                message: 'Some class features reference non-SRD content'
+            });
         }
 
         // Common validation for all types
-        if (formData.name && formData.name.includes('Tasha') || formData.name.includes('Xanathar')) {
+        if (formData.name &&
+            (formData.name.includes('Hexblade') ||
+                formData.name.includes('Echo Knight') ||
+                formData.name.includes('Bladesinger'))
+        ) {
             issues.push({
                 severity: 'error',
-                message: 'Name references non-SRD content'
+                message: 'Name references protected D&D content that is not in the SRD'
             });
         }
 
@@ -222,7 +130,7 @@ const CharacterEditor = ({ type = 'character' }) => {
             ...prev,
             isSrdCompliant: issues.filter(issue => issue.severity === 'error').length === 0
         }));
-    }, [formData, type]);
+    }, [formData]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -234,13 +142,10 @@ const CharacterEditor = ({ type = 'character' }) => {
         }));
     };
 
-    const handleNestedChange = (category, field, value) => {
+    const handleArrayChange = (field, value) => {
         setFormData(prev => ({
             ...prev,
-            [category]: {
-                ...prev[category],
-                [field]: value
-            },
+            [field]: value,
             updatedAt: new Date().toISOString()
         }));
     };
@@ -251,13 +156,13 @@ const CharacterEditor = ({ type = 'character' }) => {
 
         try {
             if (isNew) {
-                dispatch(addAction(formData));
+                dispatch(addCustomClass(formData));
             } else {
-                dispatch(updateAction(formData));
+                dispatch(updateCustomClass(formData));
             }
 
             setHasUnsavedChanges(false);
-            navigate(listPath);
+            navigate('/classes');
         } catch (error) {
             console.error('Error saving:', error);
             setIsSubmitting(false);
@@ -273,26 +178,65 @@ const CharacterEditor = ({ type = 'character' }) => {
             updatedAt: new Date().toISOString()
         };
 
-        dispatch(addAction(duplicatedItem));
-        navigate(`${listPath}/${duplicatedItem.id}`);
+        dispatch(addCustomClass(duplicatedItem));
+        navigate(`/classes/${duplicatedItem.id}`);
     };
 
     const handleCancel = () => {
         if (hasUnsavedChanges) {
             setConfirmLeave(true);
         } else {
-            navigate(listPath);
+            navigate('/classes');
         }
     };
 
-    // Render the appropriate tab content based on the type
+    // Add feature to class
+    const handleAddFeature = () => {
+        const newFeature = {
+            id: uuidv4(),
+            name: 'New Feature',
+            level: 1,
+            description: '',
+            isSrdCompliant: true
+        };
+
+        setFormData(prev => ({
+            ...prev,
+            features: [...prev.features, newFeature],
+            updatedAt: new Date().toISOString()
+        }));
+    };
+
+    // Remove feature from class
+    const handleRemoveFeature = (featureId) => {
+        setFormData(prev => ({
+            ...prev,
+            features: prev.features.filter(feature => feature.id !== featureId),
+            updatedAt: new Date().toISOString()
+        }));
+    };
+
+    // Update feature
+    const handleUpdateFeature = (featureId, field, value) => {
+        setFormData(prev => ({
+            ...prev,
+            features: prev.features.map(feature =>
+                feature.id === featureId
+                    ? { ...feature, [field]: value }
+                    : feature
+            ),
+            updatedAt: new Date().toISOString()
+        }));
+    };
+
+    // Render the appropriate tab content
     const renderTabContent = () => {
         switch (activeTab) {
             case 'details':
                 return (
                     <div className="space-y-4">
                         <div>
-                            <label htmlFor="name" className="form-label">Name</label>
+                            <label htmlFor="name" className="form-label">Class Name</label>
                             <input
                                 type="text"
                                 id="name"
@@ -304,178 +248,114 @@ const CharacterEditor = ({ type = 'character' }) => {
                             />
                         </div>
 
-                        <div className="mt-4">
-                            <h3 className="text-lg font-medium mb-2">Ability Scores</h3>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-                                {['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'].map((ability) => (
-                                    <div key={ability} className="text-center">
-                                        <label htmlFor={ability} className="form-label capitalize">{ability}</label>
-                                        <input
-                                            type="number"
-                                            id={ability}
-                                            value={formData.stats?.[ability] || 10}
-                                            onChange={(e) => handleNestedChange('stats', ability, parseInt(e.target.value))}
-                                            min="1"
-                                            max="30"
-                                            className="form-input text-center"
-                                        />
-                                        <div className="text-sm mt-1">
-                                            {Math.floor((formData.stats?.[ability] - 10) / 2) >= 0 ? '+' : ''}
-                                            {Math.floor((formData.stats?.[ability] - 10) / 2)}
+                        <div>
+                            <label htmlFor="description" className="form-label">Description</label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                value={formData.description}
+                                onChange={handleChange}
+                                className="form-textarea h-32"
+                            />
+                        </div>
+
+                        {renderClassSpecificFields()}
+                    </div>
+                );
+
+            case 'features':
+                return (
+                    <div className="space-y-4">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-medium">Class Features</h2>
+                            <button
+                                type="button"
+                                onClick={handleAddFeature}
+                                className="btn btn-primary"
+                            >
+                                <PlusIcon className="h-5 w-5 mr-1" />
+                                Add Feature
+                            </button>
+                        </div>
+
+                        {formData.features.length > 0 ? (
+                            <div className="space-y-4">
+                                {formData.features.map((feature) => (
+                                    <div
+                                        key={feature.id}
+                                        className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600"
+                                    >
+                                        <div className="flex justify-between items-center mb-2">
+                                            <input
+                                                type="text"
+                                                value={feature.name}
+                                                onChange={(e) => handleUpdateFeature(feature.id, 'name', e.target.value)}
+                                                className="form-input font-medium text-lg"
+                                                placeholder="Feature Name"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRemoveFeature(feature.id)}
+                                                className="text-red-600 hover:text-red-800"
+                                            >
+                                                <TrashIcon className="h-5 w-5" />
+                                            </button>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+                                            <div>
+                                                <label className="form-label">Level</label>
+                                                <input
+                                                    type="number"
+                                                    value={feature.level}
+                                                    onChange={(e) => handleUpdateFeature(feature.id, 'level', parseInt(e.target.value))}
+                                                    className="form-input"
+                                                    min="1"
+                                                    max="20"
+                                                />
+                                            </div>
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={feature.isSrdCompliant}
+                                                    onChange={(e) => handleUpdateFeature(feature.id, 'isSrdCompliant', e.target.checked)}
+                                                    className="mr-2"
+                                                />
+                                                <span>SRD Compliant</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="form-label">Description</label>
+                                            <textarea
+                                                value={feature.description}
+                                                onChange={(e) => handleUpdateFeature(feature.id, 'description', e.target.value)}
+                                                className="form-textarea h-24"
+                                            />
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                            <div>
-                                <label htmlFor="hitPoints" className="form-label">Hit Points</label>
-                                <input
-                                    type="number"
-                                    id="hitPoints"
-                                    name="hitPoints"
-                                    value={formData.hitPoints || 0}
-                                    onChange={handleChange}
-                                    min="0"
-                                    className="form-input"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="armorClass" className="form-label">Armor Class</label>
-                                <input
-                                    type="number"
-                                    id="armorClass"
-                                    name="armorClass"
-                                    value={formData.armorClass || 10}
-                                    onChange={handleChange}
-                                    min="0"
-                                    className="form-input"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="speed" className="form-label">Speed</label>
-                                <input
-                                    type="number"
-                                    id="speed"
-                                    name="speed"
-                                    value={formData.speed || 30}
-                                    onChange={handleChange}
-                                    min="0"
-                                    className="form-input"
-                                />
-                            </div>
-                        </div>
-                    </>
-                );
-
-            case 'class':
-                return (
-                    <>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label htmlFor="hitDie" className="form-label">Hit Die</label>
-                                <select
-                                    id="hitDie"
-                                    name="hitDie"
-                                    value={formData.hitDie || 'd8'}
-                                    onChange={handleChange}
-                                    className="form-select"
-                                >
-                                    <option value="d6">d6</option>
-                                    <option value="d8">d8</option>
-                                    <option value="d10">d10</option>
-                                    <option value="d12">d12</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label htmlFor="primaryAbility" className="form-label">Primary Ability</label>
-                                <select
-                                    id="primaryAbility"
-                                    name="primaryAbility"
-                                    value={formData.primaryAbility || 'strength'}
-                                    onChange={handleChange}
-                                    className="form-select"
-                                >
-                                    <option value="strength">Strength</option>
-                                    <option value="dexterity">Dexterity</option>
-                                    <option value="constitution">Constitution</option>
-                                    <option value="intelligence">Intelligence</option>
-                                    <option value="wisdom">Wisdom</option>
-                                    <option value="charisma">Charisma</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="mt-4">
-                            <h3 className="text-lg font-medium mb-2">Class Features</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                                Add key features that define this class. Remember to only include SRD-compliant content if you plan to share this.
-                            </p>
-
-                            {/* Class features would be implemented with a dynamic list */}
-                            <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-md">
-                                <p className="text-center text-gray-500 dark:text-gray-400">
-                                    Class feature editor will be implemented here
+                        ) : (
+                            <div className="text-center py-8 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <p className="text-gray-500 dark:text-gray-400">
+                                    No features added yet. Click the "Add Feature" button to add your first class feature.
                                 </p>
                             </div>
-                        </div>
-                    </>
+                        )}
+                    </div>
                 );
 
-            case 'race':
+            case 'srd':
                 return (
-                    <>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label htmlFor="size" className="form-label">Size</label>
-                                <select
-                                    id="size"
-                                    name="size"
-                                    value={formData.size || 'medium'}
-                                    onChange={handleChange}
-                                    className="form-select"
-                                >
-                                    <option value="tiny">Tiny</option>
-                                    <option value="small">Small</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="large">Large</option>
-                                    <option value="huge">Huge</option>
-                                    <option value="gargantuan">Gargantuan</option>
-                                </select>
-                            </div>
+                    <div>
+                        <SrdValidator issues={srdIssues} />
+                    </div>
+                );
 
-                            <div>
-                                <label htmlFor="speed" className="form-label">Base Speed</label>
-                                <input
-                                    type="number"
-                                    id="speed"
-                                    name="speed"
-                                    value={formData.speed || 30}
-                                    onChange={handleChange}
-                                    min="0"
-                                    className="form-input"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="mt-4">
-                            <h3 className="text-lg font-medium mb-2">Racial Traits</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                                Add traits that are unique to this race. Remember to only include SRD-compliant content if you plan to share this.
-                            </p>
-
-                            {/* Racial traits would be implemented with a dynamic list */}
-                            <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-md">
-                                <p className="text-center text-gray-500 dark:text-gray-400">
-                                    Racial trait editor will be implemented here
-                                </p>
-                            </div>
-                        </div>
-                    </>
+            case 'preview':
+                return (
+                    <div>
+                        {renderPreview()}
+                    </div>
                 );
 
             default:
@@ -483,143 +363,177 @@ const CharacterEditor = ({ type = 'character' }) => {
         }
     };
 
-    // Render a preview of the item
+    // Render fields specific to the class
+    const renderClassSpecificFields = () => {
+        return (
+            <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label htmlFor="hitDie" className="form-label">Hit Die</label>
+                        <select
+                            id="hitDie"
+                            name="hitDie"
+                            value={formData.hitDie || 'd8'}
+                            onChange={handleChange}
+                            className="form-select"
+                        >
+                            <option value="d6">d6</option>
+                            <option value="d8">d8</option>
+                            <option value="d10">d10</option>
+                            <option value="d12">d12</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label htmlFor="primaryAbility" className="form-label">Primary Ability</label>
+                        <select
+                            id="primaryAbility"
+                            name="primaryAbility"
+                            value={formData.primaryAbility || 'strength'}
+                            onChange={handleChange}
+                            className="form-select"
+                        >
+                            <option value="strength">Strength</option>
+                            <option value="dexterity">Dexterity</option>
+                            <option value="constitution">Constitution</option>
+                            <option value="intelligence">Intelligence</option>
+                            <option value="wisdom">Wisdom</option>
+                            <option value="charisma">Charisma</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label className="form-label">Saving Throw Proficiencies</label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        {['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'].map((ability) => (
+                            <div key={ability} className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id={`save-${ability}`}
+                                    checked={formData.savingThrowProficiencies?.includes(ability) || false}
+                                    onChange={(e) => {
+                                        const newProficiencies = e.target.checked
+                                            ? [...(formData.savingThrowProficiencies || []), ability]
+                                            : (formData.savingThrowProficiencies || []).filter(a => a !== ability);
+                                        handleArrayChange('savingThrowProficiencies', newProficiencies);
+                                    }}
+                                    className="mr-2"
+                                />
+                                <label htmlFor={`save-${ability}`} className="capitalize">{ability}</label>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <label className="form-label">Armor Proficiencies</label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        {['light', 'medium', 'heavy', 'shields'].map((armor) => (
+                            <div key={armor} className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id={`armor-${armor}`}
+                                    checked={formData.armorProficiencies?.includes(armor) || false}
+                                    onChange={(e) => {
+                                        const newProficiencies = e.target.checked
+                                            ? [...(formData.armorProficiencies || []), armor]
+                                            : (formData.armorProficiencies || []).filter(a => a !== armor);
+                                        handleArrayChange('armorProficiencies', newProficiencies);
+                                    }}
+                                    className="mr-2"
+                                />
+                                <label htmlFor={`armor-${armor}`} className="capitalize">{armor}</label>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <label className="form-label">Weapon Proficiencies</label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        {['simple', 'martial'].map((weapon) => (
+                            <div key={weapon} className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id={`weapon-${weapon}`}
+                                    checked={formData.weaponProficiencies?.includes(weapon) || false}
+                                    onChange={(e) => {
+                                        const newProficiencies = e.target.checked
+                                            ? [...(formData.weaponProficiencies || []), weapon]
+                                            : (formData.weaponProficiencies || []).filter(w => w !== weapon);
+                                        handleArrayChange('weaponProficiencies', newProficiencies);
+                                    }}
+                                    className="mr-2"
+                                />
+                                <label htmlFor={`weapon-${weapon}`} className="capitalize">{weapon} weapons</label>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </>
+        );
+    };
+
+    // Render a preview of the class
     const renderPreview = () => {
-        switch (type) {
-            case 'character':
-                return (
-                    <div className="character-sheet">
-                        <h2 className="character-name">{formData.name || 'Unnamed Character'}</h2>
+        return (
+            <div className="stat-block">
+                <h1>{formData.name || 'Unnamed Class'}</h1>
 
-                        <div className="character-details">
-                            <div>
-                                <span className="font-medium">Race:</span> {formData.race || 'Unknown'}
-                            </div>
-                            <div>
-                                <span className="font-medium">Class:</span> {formData.class || 'Unknown'} {formData.level ? `(Level ${formData.level})` : ''}
-                            </div>
-                            <div>
-                                <span className="font-medium">Background:</span> {formData.background || 'Unknown'}
-                            </div>
-                        </div>
+                <div className="property-line">
+                    <span className="property-name">Hit Die:</span> {formData.hitDie || 'd8'}
+                </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                            <div className="p-2 bg-white dark:bg-gray-700 rounded-md shadow-sm">
-                                <div className="text-center font-medium">Hit Points</div>
-                                <div className="text-center text-xl">{formData.hitPoints || 0}</div>
-                            </div>
-                            <div className="p-2 bg-white dark:bg-gray-700 rounded-md shadow-sm">
-                                <div className="text-center font-medium">Armor Class</div>
-                                <div className="text-center text-xl">{formData.armorClass || 10}</div>
-                            </div>
-                            <div className="p-2 bg-white dark:bg-gray-700 rounded-md shadow-sm">
-                                <div className="text-center font-medium">Speed</div>
-                                <div className="text-center text-xl">{formData.speed || 30} ft</div>
-                            </div>
-                        </div>
+                <div className="property-line">
+                    <span className="property-name">Primary Ability:</span> {formData.primaryAbility ? formData.primaryAbility.charAt(0).toUpperCase() + formData.primaryAbility.slice(1) : 'Strength'}
+                </div>
 
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-4">
-                            {['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'].map((ability) => (
-                                <div key={ability} className="p-2 bg-white dark:bg-gray-700 rounded-md shadow-sm text-center">
-                                    <div className="font-medium capitalize">{ability.slice(0, 3)}</div>
-                                    <div className="text-xl">{formData.stats?.[ability] || 10}</div>
-                                    <div className="text-sm">
-                                        {Math.floor((formData.stats?.[ability] - 10) / 2) >= 0 ? '+' : ''}
-                                        {Math.floor((formData.stats?.[ability] - 10) / 2)}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                <div className="property-line">
+                    <span className="property-name">Saving Throws:</span> {
+                        formData.savingThrowProficiencies?.length
+                            ? formData.savingThrowProficiencies.map(save => save.charAt(0).toUpperCase() + save.slice(1)).join(', ')
+                            : 'None'
+                    }
+                </div>
 
-                        {formData.description && (
-                            <div className="mb-4">
-                                <h3 className="text-lg font-medium mb-2">Description</h3>
-                                <div className="bg-white dark:bg-gray-700 p-3 rounded-md shadow-sm">
-                                    {formData.description}
-                                </div>
-                            </div>
-                        )}
+                <div className="property-line">
+                    <span className="property-name">Armor:</span> {
+                        formData.armorProficiencies?.length
+                            ? formData.armorProficiencies.map(armor => armor.charAt(0).toUpperCase() + armor.slice(1)).join(', ')
+                            : 'None'
+                    }
+                </div>
+
+                <div className="property-line">
+                    <span className="property-name">Weapons:</span> {
+                        formData.weaponProficiencies?.length
+                            ? formData.weaponProficiencies.map(weapon => weapon.charAt(0).toUpperCase() + weapon.slice(1) + ' weapons').join(', ')
+                            : 'None'
+                    }
+                </div>
+
+                {formData.description && (
+                    <div className="mt-4">
+                        <div className="actions-header">Description</div>
+                        <p>{formData.description}</p>
                     </div>
-                );
+                )}
 
-            case 'class':
-                return (
-                    <div className="stat-block">
-                        <h1>{formData.name || 'Unnamed Class'}</h1>
-
-                        <div className="property-line">
-                            <span className="property-name">Hit Die:</span> {formData.hitDie || 'd8'}
-                        </div>
-
-                        <div className="property-line">
-                            <span className="property-name">Primary Ability:</span> {formData.primaryAbility ? formData.primaryAbility.charAt(0).toUpperCase() + formData.primaryAbility.slice(1) : 'Strength'}
-                        </div>
-
-                        {formData.description && (
-                            <div className="mt-4">
-                                <div className="actions-header">Description</div>
-                                <p>{formData.description}</p>
+                <div className="mt-4">
+                    <div className="actions-header">Class Features</div>
+                    {formData.features && formData.features.length > 0 ? (
+                        formData.features.sort((a, b) => a.level - b.level).map((feature) => (
+                            <div key={feature.id} className="mt-2">
+                                <span className="action-name">{feature.name} (Level {feature.level}).</span> {feature.description}
                             </div>
-                        )}
-
-                        <div className="mt-4">
-                            <div className="actions-header">Class Features</div>
-                            {formData.features && formData.features.length > 0 ? (
-                                formData.features.map((feature, index) => (
-                                    <div key={index} className="mt-2">
-                                        <span className="action-name">{feature.name}.</span> {feature.description}
-                                    </div>
-                                ))
-                            ) : (
-                                <p className="text-gray-500 dark:text-gray-400 italic">No class features added yet.</p>
-                            )}
-                        </div>
-                    </div>
-                );
-
-            case 'race':
-                return (
-                    <div className="stat-block">
-                        <h1>{formData.name || 'Unnamed Race'}</h1>
-
-                        <div className="property-line">
-                            <span className="property-name">Size:</span> {formData.size ? formData.size.charAt(0).toUpperCase() + formData.size.slice(1) : 'Medium'}
-                        </div>
-
-                        <div className="property-line">
-                            <span className="property-name">Speed:</span> {formData.speed || 30} ft.
-                        </div>
-
-                        {formData.description && (
-                            <div className="mt-4">
-                                <div className="actions-header">Description</div>
-                                <p>{formData.description}</p>
-                            </div>
-                        )}
-
-                        <div className="mt-4">
-                            <div className="actions-header">Traits</div>
-                            {formData.traits && formData.traits.length > 0 ? (
-                                formData.traits.map((trait, index) => (
-                                    <div key={index} className="mt-2">
-                                        <span className="action-name">{trait.name}.</span> {trait.description}
-                                    </div>
-                                ))
-                            ) : (
-                                <p className="text-gray-500 dark:text-gray-400 italic">No racial traits added yet.</p>
-                            )}
-                        </div>
-                    </div>
-                );
-
-            default:
-                return (
-                    <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow">
-                        <h2 className="text-xl font-bold mb-2">{formData.name || 'Unnamed Item'}</h2>
-                        <p>{formData.description || 'No description'}</p>
-                    </div>
-                );
-        }
+                        ))
+                    ) : (
+                        <p className="text-gray-500 dark:text-gray-400 italic">No class features added yet.</p>
+                    )}
+                </div>
+            </div>
+        );
     };
 
     return (
@@ -632,7 +546,7 @@ const CharacterEditor = ({ type = 'character' }) => {
                     >
                         <ArrowLeftIcon className="h-5 w-5" />
                     </button>
-                    <h1 className="text-2xl font-medieval font-bold">{title}</h1>
+                    <h1 className="text-2xl font-medieval font-bold">{isNew ? 'Create New Class' : 'Edit Class'}</h1>
                 </div>
 
                 <div className="flex items-center space-x-2">
@@ -682,7 +596,7 @@ const CharacterEditor = ({ type = 'character' }) => {
                             </h3>
                             <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
                                 <p>
-                                    This {type} contains elements that might not be compliant with the SRD guidelines.
+                                    This class contains elements that might not be compliant with the SRD guidelines.
                                     Check the SRD tab for details.
                                 </p>
                             </div>
@@ -702,6 +616,16 @@ const CharacterEditor = ({ type = 'character' }) => {
                                 }`}
                         >
                             Details
+                        </button>
+
+                        <button
+                            onClick={() => setActiveTab('features')}
+                            className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'features'
+                                    ? 'border-dnd-red text-dnd-red dark:text-red-400'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                                }`}
+                        >
+                            Features
                         </button>
 
                         <button
@@ -749,7 +673,7 @@ const CharacterEditor = ({ type = 'character' }) => {
                             <button
                                 onClick={() => {
                                     setConfirmLeave(false);
-                                    navigate(listPath);
+                                    navigate('/classes');
                                 }}
                                 className="btn btn-danger"
                             >
@@ -763,96 +687,4 @@ const CharacterEditor = ({ type = 'character' }) => {
     );
 };
 
-export default CharacterEditor;
-<div>
-    <label htmlFor="description" className="form-label">Description</label>
-    <textarea
-        id="description"
-        name="description"
-        value={formData.description}
-        onChange={handleChange}
-        className="form-textarea h-32"
-    />
-</div>
-
-{/* Type-specific form fields would be added here */ }
-{ renderTypeSpecificFields() }
-          </div >
-        );
-      
-      case 'srd':
-return (
-    <div>
-        <SrdValidator issues={srdIssues} />
-    </div>
-);
-      
-      case 'preview':
-return (
-    <div>
-        {renderPreview()}
-    </div>
-);
-      
-      default:
-return null;
-    }
-  };
-
-// Render fields specific to the item type
-const renderTypeSpecificFields = () => {
-    switch (type) {
-        case 'character':
-            return (
-          <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label htmlFor="race" className="form-label">Race</label>
-                            <input
-                                type="text"
-                                id="race"
-                                name="race"
-                                value={formData.race || ''}
-                                onChange={handleChange}
-                                className="form-input"
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="class" className="form-label">Class</label>
-                            <input
-                                type="text"
-                                id="class"
-                                name="class"
-                                value={formData.class || ''}
-                                onChange={handleChange}
-                                className="form-input"
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="level" className="form-label">Level</label>
-                            <input
-                                type="number"
-                                id="level"
-                                name="level"
-                                value={formData.level || 1}
-                                onChange={handleChange}
-                                min="1"
-                                max="20"
-                                className="form-input"
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="background" className="form-label">Background</label>
-                            <input
-                                type="text"
-                                id="background"
-                                name="background"
-                                value={formData.background || ''}
-                                onChange={handleChange}
-                                className="form-input"
-                            />
-                        </div>
-                    </div>
+export default ClassEditor;

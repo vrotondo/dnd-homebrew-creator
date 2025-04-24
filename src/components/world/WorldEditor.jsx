@@ -952,8 +952,8 @@ const WorldEditor = ({ type = 'world' }) => {
                         <button
                             onClick={() => setActiveTab('details')}
                             className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'details'
-                                    ? 'border-dnd-red text-dnd-red dark:text-red-400'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                                ? 'border-dnd-red text-dnd-red dark:text-red-400'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                                 }`}
                         >
                             Details
@@ -962,8 +962,8 @@ const WorldEditor = ({ type = 'world' }) => {
                         <button
                             onClick={() => setActiveTab('srd')}
                             className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'srd'
-                                    ? 'border-dnd-red text-dnd-red dark:text-red-400'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                                ? 'border-dnd-red text-dnd-red dark:text-red-400'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                                 }`}
                         >
                             SRD Compliance {srdIssues.length > 0 && `(${srdIssues.length})`}
@@ -972,8 +972,8 @@ const WorldEditor = ({ type = 'world' }) => {
                         <button
                             onClick={() => setActiveTab('preview')}
                             className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'preview'
-                                    ? 'border-dnd-red text-dnd-red dark:text-red-400'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                                ? 'border-dnd-red text-dnd-red dark:text-red-400'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                                 }`}
                         >
                             Preview
@@ -1019,137 +1019,3 @@ const WorldEditor = ({ type = 'world' }) => {
 };
 
 export default WorldEditor;
-                  <div className="font-medium">World</div>
-                  <div>{worlds.find(w => w.id === formData.worldId)?.name || 'Unknown World'}</div>
-                </div >
-              )}
-
-{
-    formData.climate && (
-        <div className="p-2 bg-white bg-opacity-70 rounded-md">
-            <div className="font-medium">Climate</div>
-            <div>{formData.climate}</div>
-        </div>
-    )
-}
-
-{
-    formData.terrain && (
-        <div className="p-2 bg-white bg-opacity-70 rounded-md">
-            <div className="font-medium">Terrain</div>
-            <div>{formData.terrain}</div>
-        </div>
-    )
-}
-
-{
-    formData.population && (
-        <div className="p-2 bg-white bg-opacity-70 rounded-md">
-            <div className="font-medium">Population</div>
-            <div>{formData.population}</div>
-        </div>
-    )
-}
-
-{
-    formData.government && (
-        <div className="p-2 bg-white bg-opacity-70 rounded-md">
-            <div className="font-medium">Government</div>
-            <div>{formData.government}</div>
-        </div>
-    )
-}
-            </div >
-
-{
-    formData.description && (
-        <div className="mb-4">
-            <h3 className="text-xl font-medieval font-bold mb-2 border-b border-amber-600 pb-1">Description</h3>
-            <p className="text-gray-800">{formData.description}</p>
-        </div>
-    )
-}
-
-{
-    formData.notableLocations && formData.notableLocations.length > 0 && (
-        <div className="mt-4">
-            <h3 className="text-xl font-medieval font-bold mb-2 border-b border-amber-600 pb-1">Notable Locations</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                {formData.notableLocations.map((location, index) => (
-                    <div key={index} className="bg-white bg-opacity-50 p-2 rounded-md shadow">
-                        {location.name}
-                        {location.type && <div className="text-sm text-gray-600">{location.type}</div>}
-                    </div>
-                ))}
-            </div>
-        </div>
-    )
-}
-          </div >
-        );
-        
-      case 'location':
-return (
-    <div className="bg-parchment p-6 rounded-lg border border-amber-800">
-        <h2 className="text-3xl font-medieval font-bold text-center mb-4">{formData.name || 'Unnamed Location'}</h2>
-
-        {formData.imageUrl && (
-            <div className="mb-4 text-center">
-                <img
-                    src={formData.imageUrl}
-                    alt={formData.name}
-                    className="max-w-full h-auto rounded-lg mx-auto shadow-lg border-2 border-amber-700"
-                    style={{ maxHeight: '300px' }}
-                    onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/300x200?text=Location';
-                    }}
-                />
-            </div>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            {formData.locationType && (
-                <div className="p-2 bg-white bg-opacity-70 rounded-md">import {useState, useEffect} from 'react';
-                    import {useSelector, useDispatch} from 'react-redux';
-                    import {useParams, useNavigate} from 'react-router-dom';
-                    import {v4 as uuidv4} from 'uuid';
-                    import {
-                        addWorld,
-                        updateWorld,
-                        addRegion,
-                        updateRegion,
-                        addLocation,
-                        updateLocation,
-                        addFaction,
-                        updateFaction,
-                        addNpc,
-                        updateNpc
-                    } from '../../store/worldSlice';
-                    import SrdValidator from '../srd/SrdValidator';
-                    import {
-                        SaveIcon,
-                        XMarkIcon,
-                        ExclamationTriangleIcon,
-                        DocumentDuplicateIcon,
-                        ArrowLeftIcon,
-                        PlusIcon,
-                        TrashIcon
-                    } from '@heroicons/react/24/outline';
-
-                    const WorldEditor = ({type = 'world'}) => {
-  const dispatch = useDispatch();
-                    const navigate = useNavigate();
-                    const {id} = useParams();
-                    const isNew = !id;
-
-                    // Get the appropriate data and actions based on the type
-                    let items = [];
-                    let title = '';
-                    let listPath = '';
-                    let addAction = null;
-                    let updateAction = null;
-
-                    switch (type) {
-    case 'region':
-      items = useSelector((state) => state.world.regions);
-                    title = isNew ? 'Create New Region' : 'Edit Region';

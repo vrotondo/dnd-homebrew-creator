@@ -625,8 +625,8 @@ const ExportTool = () => {
 
             {exportStatus && (
                 <div className={`mb-6 p-4 rounded-lg ${exportStatus === 'success'
-                        ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
-                        : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
+                    ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
+                    : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
                     }`}>
                     <div className="flex">
                         <div className="flex-shrink-0">
@@ -638,16 +638,16 @@ const ExportTool = () => {
                         </div>
                         <div className="ml-3">
                             <h3 className={`text-sm font-medium ${exportStatus === 'success'
-                                    ? 'text-green-800 dark:text-green-200'
-                                    : 'text-red-800 dark:text-red-200'
+                                ? 'text-green-800 dark:text-green-200'
+                                : 'text-red-800 dark:text-red-200'
                                 }`}>
                                 {exportStatus === 'success'
                                     ? 'Export Successful'
                                     : 'Export Failed'}
                             </h3>
                             <div className={`mt-2 text-sm ${exportStatus === 'success'
-                                    ? 'text-green-700 dark:text-green-300'
-                                    : 'text-red-700 dark:text-red-300'
+                                ? 'text-green-700 dark:text-green-300'
+                                : 'text-red-700 dark:text-red-300'
                                 }`}>
                                 {exportStatus === 'success'
                                     ? 'Your content has been exported successfully.'
@@ -701,4 +701,3 @@ const ExportTool = () => {
 };
 
 export default ExportTool;
-<option value="
