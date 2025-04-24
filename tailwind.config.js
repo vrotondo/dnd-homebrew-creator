@@ -30,9 +30,13 @@ export default {
                 'manuscript': ['Fondamento', 'cursive'],
             },
             backgroundImage: {
-                'parchment-texture': "url('/src/assets/parchment.jpg')",
+                'parchment-texture': "url('/assets/parchment.jpg')",
             },
         },
     },
-    plugins: [],
-}
+    darkMode: 'class', // Enable dark mode
+    plugins: [
+        require('@tailwindcss/forms'), // Optional plugins
+        require('@tailwindcss/typography'),
+    ],
+};

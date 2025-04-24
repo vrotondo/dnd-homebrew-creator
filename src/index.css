@@ -1,9 +1,9 @@
+/* Import custom fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Fondamento&family=MedievalSharp&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import custom fonts */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Fondamento&family=MedievalSharp&display=swap');
 
 /* Global Styles */
 :root {

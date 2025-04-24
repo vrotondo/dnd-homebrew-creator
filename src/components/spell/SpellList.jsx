@@ -12,7 +12,7 @@ import {
     AdjustmentsHorizontalIcon,
     FunnelIcon,
 } from '@heroicons/react/24/outline';
-import { deleteSpell } from '../../store/spellSlice';
+import { deleteSpell, addSpell } from '../../store/spellSlice'; // Added import for addSpell
 import { addNotification } from '../../store/uiSlice';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -276,16 +276,18 @@ const SpellList = () => {
                             Export
                         </button>
 
-                        <label className="btn btn-secondary"></label>
-                        <ArrowDownOnSquareIcon className="h-5 w-5 mr-2" />
-                        Import
-                        <input
-                            type="file"
-                            accept=".json"
-                            className="hidden"
-                            onChange={handleImport}
-                        />
-                    </label>
+                        {/* Fixed label closing tag and structure */}
+                        <label className="btn btn-secondary">
+                            <ArrowDownOnSquareIcon className="h-5 w-5 mr-2" />
+                            Import
+                            <input
+                                type="file"
+                                accept=".json"
+                                className="hidden"
+                                onChange={handleImport}
+                            />
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -324,14 +326,9 @@ const SpellList = () => {
                                 className="form-select"
                             >
                                 <option value="all">All Schools</option>
-                                <option value="abjuration">Abjuration</option>
-                                <option value="conjuration">Conjuration</option>
-                                <option value="divination">Divination</option>
-                                <option value="enchantment">Enchantment</option>
-                                <option value="evocation">Evocation</option>
-                                <option value="illusion">Illusion</option>
-                                <option value="necromancy">Necromancy</option>
-                                <option value="transmutation">Transmutation</option>
+                                {spellSchools.map(school => (
+                                    <option key={school} value={school}>{school}</option>
+                                ))}
                             </select>
                         </div>
 
@@ -514,37 +511,34 @@ const SpellList = () => {
                     </Link>
                 </div>
             )}
-        </div>
 
-      {/* Delete Confirmation Modal */ }
-    {
-        showDeleteConfirm && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-md w-full">
-                    <h3 className="text-lg font-medium mb-4">Confirm Deletion</h3>
-                    <p className="mb-4">
-                        Are you sure you want to delete this spell? This action cannot be undone.
-                    </p>
-                    <div className="flex justify-end space-x-3">
-                        <button
-                            onClick={() => setShowDeleteConfirm(null)}
-                            className="btn btn-secondary"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={() => handleDelete(showDeleteConfirm)}
-                            className="btn btn-danger"
-                        >
-                            Delete
-                        </button>
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-md w-full">
+                        <h3 className="text-lg font-medium mb-4">Confirm Deletion</h3>
+                        <p className="mb-4">
+                            Are you sure you want to delete this spell? This action cannot be undone.
+                        </p>
+                        <div className="flex justify-end space-x-3">
+                            <button
+                                onClick={() => setShowDeleteConfirm(null)}
+                                className="btn btn-secondary"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => handleDelete(showDeleteConfirm)}
+                                className="btn btn-danger"
+                            >
+                                Delete
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        )
-    }
-    </div >
-  );
+            )}
+        </div>
+    );
 };
 
 export default SpellList;
