@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # D&D Homebrew Creator
 
 A React-based web application for creating, managing, and sharing your D&D 5th Edition homebrew content, with built-in SRD compliance validation.
@@ -114,3 +115,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [D&D 5E SRD](https://www.dndbeyond.com/srd) - For reference material
 - [D&D Beyond](https://www.dndbeyond.com/) - For inspiration
 - The D&D community for their endless creativity
+=======
+# DnD-5E-homebrew-content-creation-app
+D&amp;D 5E Homebrew Content Creation App coded in HTML, CSS, and JavaScript using Vite and React.
+>>>>>>> 2f362f98a925fc42bab47deb6e8dd5fd838c7342
