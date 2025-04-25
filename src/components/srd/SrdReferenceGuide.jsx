@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
     QuestionMarkCircleIcon,
-    ExternalLinkIcon,
+    ArrowTopRightOnSquareIcon,
     MagnifyingGlassIcon,
     BookOpenIcon,
     DocumentTextIcon
@@ -84,8 +84,8 @@ const SrdReferenceGuide = () => {
                             <button
                                 onClick={() => setActiveTab('overview')}
                                 className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'overview'
-                                        ? 'border-dnd-red text-dnd-red dark:text-red-400'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                                    ? 'border-dnd-red text-dnd-red dark:text-red-400'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                                     }`}
                             >
                                 Overview
@@ -94,8 +94,8 @@ const SrdReferenceGuide = () => {
                             <button
                                 onClick={() => setActiveTab('reference')}
                                 className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'reference'
-                                        ? 'border-dnd-red text-dnd-red dark:text-red-400'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                                    ? 'border-dnd-red text-dnd-red dark:text-red-400'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                                     }`}
                             >
                                 Reference
@@ -104,8 +104,8 @@ const SrdReferenceGuide = () => {
                             <button
                                 onClick={() => setActiveTab('faq')}
                                 className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'faq'
-                                        ? 'border-dnd-red text-dnd-red dark:text-red-400'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                                    ? 'border-dnd-red text-dnd-red dark:text-red-400'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                                     }`}
                             >
                                 FAQ
@@ -144,7 +144,7 @@ const SrdReferenceGuide = () => {
                                                 Read the full Systems Reference Document on D&D Beyond
                                             </p>
                                         </div>
-                                        <ExternalLinkIcon className="h-5 w-5 text-gray-400 ml-auto" />
+                                        <ArrowTopRightOnSquareIcon className="h-5 w-5 text-gray-400 ml-auto" />
                                     </a>
 
                                     <a
@@ -160,7 +160,7 @@ const SrdReferenceGuide = () => {
                                                 Official resources from Wizards of the Coast
                                             </p>
                                         </div>
-                                        <ExternalLinkIcon className="h-5 w-5 text-gray-400 ml-auto" />
+                                        <ArrowTopRightOnSquareIcon className="h-5 w-5 text-gray-400 ml-auto" />
                                     </a>
                                 </div>
                             </div>
