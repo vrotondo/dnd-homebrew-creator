@@ -1,24 +1,19 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // Set the correct base path if deploying to GitHub Pages
-  // For a project at https://username.github.io/repo-name/
+  // Critical: set the base path to match your GitHub repository name
   base: '/dnd-homebrew-creator/',
-  server: {
-    // This prevents CORS issues during development
-    open: true,
-    // Configure HMR behavior
-    hmr: {
-      overlay: true,
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
     },
   },
-  // Ensure proper build settings
   build: {
     outDir: 'dist',
-    assetsDir: 'assets',
     sourcemap: true,
   },
 });
