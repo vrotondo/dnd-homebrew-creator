@@ -1,18 +1,54 @@
+/* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;500;600;700&family=Fondamento:ital@0;1&display=swap');
 
+/* Tailwind Directives - These MUST come before other styles */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Global styles */
+html,
 body {
-  font-family: 'Cinzel', serif;
-  @apply bg-parchment text-ink;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
-/* Custom utility classes */
+body {
+  font-family: 'Cinzel', serif;
+  background-color: #F5F5DC;
+  /* Fallback for bg-parchment */
+  color: #36454F;
+  /* Fallback for text-ink */
+}
+
+/* CSS Debugging styles */
+.debug-grid {
+  background: linear-gradient(rgba(0, 0, 0, 0.1) 1px,
+      transparent 1px),
+    linear-gradient(90deg,
+      rgba(0, 0, 0, 0.1) 1px,
+      transparent 1px);
+  background-size: 20px 20px;
+  background-position: center center;
+}
+
+/* Print to console when CSS loads */
+@media all {
+  body::after {
+    content: '';
+    display: none;
+  }
+}
+
+/* Custom components */
 @layer components {
   .btn-primary {
     @apply px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md transition-colors;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md transition-colors;
   }
 
   .card {
@@ -22,4 +58,17 @@ body {
   .card-parchment {
     @apply p-6 bg-parchment shadow-md rounded-md border border-amber-800/30;
   }
+}
+
+/* Forcefully apply colors to help with debugging */
+.bg-parchment-force {
+  background-color: #F5F5DC !important;
+}
+
+.text-ink-force {
+  color: #36454F !important;
+}
+
+.dnd-red-force {
+  color: #E4002B !important;
 }
