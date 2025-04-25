@@ -16,7 +16,7 @@ import {
 } from '../../store/worldSlice';
 import SrdValidator from '../srd/SrdValidator';
 import {
-    SaveIcon,
+    DocumentCheckIcon, // Using DocumentCheckIcon instead of SaveIcon
     XMarkIcon,
     ExclamationTriangleIcon,
     DocumentDuplicateIcon,
@@ -919,7 +919,7 @@ const WorldEditor = ({ type = 'world' }) => {
                         className="btn btn-primary"
                         disabled={isSubmitting}
                     >
-                        <SaveIcon className="h-5 w-5 mr-1" />
+                        <DocumentCheckIcon className="h-5 w-5 mr-1" />
                         {isSubmitting ? 'Saving...' : 'Save'}
                     </button>
                 </div>
