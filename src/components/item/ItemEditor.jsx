@@ -11,7 +11,7 @@ import {
 import { validateSrdCompliance } from '../../utils/srdValidator';
 import SrdValidator from '../srd/SrdValidator';
 import {
-    SaveIcon,
+    DocumentCheckIcon,
     XMarkIcon,
     ExclamationTriangleIcon,
     DocumentDuplicateIcon,
@@ -550,7 +550,7 @@ const ItemEditor = () => {
                         className="btn btn-primary"
                         disabled={isSubmitting}
                     >
-                        <SaveIcon className="h-5 w-5 mr-1" />
+                        <DocumentCheckIcon className="h-5 w-5 mr-1" />
                         {isSubmitting ? 'Saving...' : 'Save'}
                     </button>
                 </div>
