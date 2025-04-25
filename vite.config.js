@@ -2,10 +2,8 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // Critical: set the base path to match your GitHub repository name
   base: '/dnd-homebrew-creator/',
   resolve: {
     alias: {
