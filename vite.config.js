@@ -4,14 +4,17 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/dnd-homebrew-creator/',
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
-    },
+  preview: {
+    host: '0.0.0.0',
+    port: process.env.PORT || 4173,
+    allowedHosts: [
+      'dandd-homebrew-creator.onrender.com',
+      'localhost',
+      '127.0.0.1'
+    ]
   },
-  build: {
-    outDir: 'dist',
-    sourcemap: true,
-  },
-});
+  server: {
+    host: '0.0.0.0',
+    port: process.env.PORT || 5173
+  }
+})
